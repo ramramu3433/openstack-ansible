@@ -1,0 +1,14 @@
+---
+ - hosts: all
+   tasks: 
+    - name: Getting IP 
+      setup:
+      register: result
+    - debug:
+       var:  result
+    - name: 
+      lineinfile: 
+       line: "{{ result.ansible_facts.ansible_default_ipv4.address }} controller "
+       dest: /etc/hosts
+      become: yes
+#       insertafter: EOF

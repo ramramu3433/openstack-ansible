@@ -1,0 +1,8 @@
+---
+ - hosts: all
+   tasks:
+    - name: Adding the Mitaka repository
+      apt_repository:
+       repo: deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main 
+       state: present 
+      become: true

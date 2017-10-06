@@ -1,0 +1,29 @@
+---
+ - hosts: all
+   tasks:
+
+
+
+    - name: Interface ip
+      command: ls /sys/class/net
+      register: interfaces
+    - set_fact: 
+       interface2: "{{ interfaces.stdout_lines[1] }}"
+    - name: Fetches host interface file 
+      fetch:
+       src: /etc/network/interfaces
+       dest: templates/
+       flat: yes
+#      register: location
+#    - debug:
+#       var: location
+#   - name: Locally appending jinja template to interfaces
+#      local_action: command cat /etc/ansible/playbooks/templates/test  >> templates/interface_add.conf.j2
+#      delegate_to: 127.0.0.1 
+    - name: modifying provider interface
+      template:
+       src: interface_add.conf.j2
+       dest: /etc/network/interfaces
+      become: yes 
+       
+           

@@ -1,0 +1,13 @@
+---
+ - hosts: all
+   tasks: 
+    - name: Update cache
+      apt: 
+       update_cache: yes
+      become: true
+    - name: Installing Openstack client
+      apt:
+        pkg: python-openstackclient
+        force: yes
+        state: present
+      become: true     

@@ -1,0 +1,6 @@
+---
+ - hosts: all
+   tasks:
+    - name: Restarting networking service
+      shell:  ifdown -a && ifup -a
+      become: yes

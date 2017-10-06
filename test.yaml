@@ -1,0 +1,8 @@
+---
+ - hosts: controller
+   tasks:
+    - name: Interfaces
+      setup: 
+      register: fc
+    - debug: 
+       var: fc.ansible_facts
