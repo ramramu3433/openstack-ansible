@@ -1,3 +1,12 @@
-name: restart chrony
-service: name=chrony state=restarted
+- name: restart chrony
+  service: name=chrony state=restarted
+  listen: "restart chrony"
+- name: client
+  apt: pkg=python-openstackclient state=present
+  listen: "client"
+- name: config change
+  template:
+   src: mysql_openstack.conf.j2
+   dest: /etc/mysql/conf.d/openstack.cnf
+  listen: "Changing config of mysql" 
 

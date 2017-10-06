@@ -1,0 +1,10 @@
+---
+ - hosts: controller
+   tasks: 
+    - name: Installing Mariadb server 
+      apt: pkg=mariadb-server state=present update_cache=yes force=yes
+      become: yes
+    - name: Installing Python-mysql client
+      apt: pkg=python-pymysql state=present update_cache=yes force=yes
+      become: yes
+      notify: Changing config of mysql 
