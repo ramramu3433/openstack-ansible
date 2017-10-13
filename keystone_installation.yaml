@@ -1,0 +1,30 @@
+---
+ - hosts: controller
+   tasks: 
+    - name: Creating Token
+      command: openssl rand -hex 10
+      register: token
+    - debug:
+        var: token.stdout_lines
+    - name: Override for automatic start
+      command: "echo \"manual\" > /etc/init/keystone.override"
+      become: yes
+    - name: Installing keystone package
+      apt: pkg=keystone state=present force=yes
+      become: yes
+    - name: Installing Apache 
+      apt: pkg=apache2 state=present force=yes 
+      become: yes
+    - name: Installing libapache2-wsgi
+      apt: pkg=libapache2-mod-wsgi state=present force=yes 
+      become: yes
+    - name : adding admin token
+      lineinfile: 
+        name: /etc/keystone/keystone.conf
+        regexp: '^#admin_token =.*'
+        
+        line: 'admin_token= {{ token.stdout_lines[0] }} '
+      become: yes
+      register: token_op
+    - debug: 
+        var: token_op 

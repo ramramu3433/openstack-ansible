@@ -1,0 +1,36 @@
+---
+ - hosts: controller
+   tasks: 
+   - name: Configuring ServerName
+     lineinfile:
+      dest: /etc/apache2/apache2.conf
+      regexp: '^ServerName.*'
+      line: 'ServerName controller'
+     become: yes
+   - name: Copying VHost file
+     template:
+      src: wsgi-keystone.conf.j2
+      dest: /etc/apache2/sites-available/wsgi-keystone.conf
+     become: yes
+   - name: linking files in sites-enabled and sites-available
+     file:
+      src: /etc/apache2/sites-available/wsgi-keystone.conf
+      dest: /etc/apache2/sites-enabled/wsgi-keystone.conf
+      state: link
+     become: yes
+     notify:
+      -  stop keystone
+      -  restart apache
+   - name: Remove local sqlitedb
+     file: 
+      name: /var/lib/keystone/keystone.db
+      state: absent  
+   handlers:
+   - name: stop keystone
+     service: name="keystone" state="stopped"
+     become: yes
+
+   - name: restart apache
+     service: name="apache2" state="restarted"
+     become: yes
+

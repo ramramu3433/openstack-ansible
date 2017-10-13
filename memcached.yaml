@@ -1,0 +1,22 @@
+---
+ - hosts: controller
+   tasks:
+    - name: Getting Ip
+      setup:
+      register: result
+    - name: Installing memcached
+      apt: pkg=memcached state=present force=yes 
+      become: yes
+    - name: Replaing Bind 
+      lineinfile: 
+        name: /etc/memcached.conf
+        regexp: '^\-l (d+)'
+        line: "-l {{ result.ansible_facts.ansible_default_ipv4.address  }}"
+      notify: 'restart memcached'
+      become: yes
+   handlers:
+    - name: restart memcached
+      service: name=memcached state=restarted 
+      become: yes
+      
+  

@@ -1,0 +1,21 @@
+---
+ - hosts: all
+   tasks: 
+    - name: creating Databse Keystone
+      mysql_db:
+            login_user: root
+            login_password: password
+            name: glance
+            state: present 
+      become: yes
+      notify: user creation
+   handlers:
+    - name: user creation
+      mysql_user:
+             login_user: root
+             login_password: password
+             user: glance
+             password: password
+             priv: glance.*:ALL,GRANT
+      become: yes
+      listen: user creation  

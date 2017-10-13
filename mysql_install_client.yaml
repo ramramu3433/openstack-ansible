@@ -1,29 +1,22 @@
 ---
  - hosts: controller
-   tasks: 
-    - name: Installing Mariadb server 
-      apt: pkg=mariadb-server state=present update_cache=yes force=yes
+   tasks:
+    - name: Python Mysqldb module
+      apt: name=python-mysqldb state=present force=yes
       become: yes
-    - name: Installing Python-mysql client
-      apt: pkg=python-pymysql state=present update_cache=yes force=yes
-      become: yes
-      notify: Changing config of mysql 
-    - name: Installing Pip
-      apt: pkg=python-pip state=present force=yes
-      become: yes
-    - name: Python Mysqldb module 
-      pip: name=MySQL-python state=present
-    - name: Deleting anonymous user  
+    - name: Deleting anonymous user
       mysql_user: login_user=root
+                  login_password="password"
                   check_implicit_admin=yes
                   user=""
                   host={{ item }}
                   state="absent"
-      with_items: 
+      with_items:
           - localhost
     - name: Change root user password on first run
-      mysql_user: 
+      mysql_user:
                   login_user=root
+                  login_password="password"
                   check_implicit_admin=yes
                   name=root
                   password="password"
@@ -32,8 +25,19 @@
       with_items:
           - localhost
     - name: remove the MySQL test database
-      action: mysql_db login_user=root login_password="password" db=test state=absent
+      action: mysql_db login_user=root login_password="password"  db=test state=absent
       notify: Changing config of mysql
-    - name: Restart Mysql
+    - name: Changing config of mysql
+      template:
+         src: mysql_openstack.conf.j2
+         dest: /etc/mysql/conf.d/openstack.cnf 
+      notify: 
+         - restart mysql
+      become: yes
+   
+   handlers:
+    - name: restart mysql
       service: name="mysql" state=restarted
-
+      become: yes
+      listen: "restart mysql"
+      

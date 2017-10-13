@@ -1,0 +1,31 @@
+---
+ - hosts: controller
+   vars:
+   - token: '357837e753873b6496c1'
+   - user: 'keystone'
+   - password: 'password'
+   - host: 'localhost'
+   - database: 'keystone'
+   tasks:
+   - name: Adding the connection string
+     lineinfile:
+       dest: /etc/keystone/keystone.conf
+       regexp: '^connection = .*'
+       line:  'connection = mysql+pymysql://{{user}}:{{password}}@{{host}}/{{database}}'
+     become: yes
+   - name: Configuring Token Provider
+     lineinfile: 
+       dest: /etc/keystone/keystone.conf
+       regexp: '^#provider = .*'
+       line: 'provider = fernet'
+     become: yes
+     notify: sync 
+   - name: Manage Fernet Token
+     command: "keystone-manage fernet_setup --keystone-user \"{{ user }}\" --keystone-group \"{{ user }}\" " 
+     become: yes
+
+   handlers:
+   - name: sync
+     command: "su -s /bin/sh -c \"keystone-manage db_sync\" keystone"
+     listen: sync
+     become: yes 

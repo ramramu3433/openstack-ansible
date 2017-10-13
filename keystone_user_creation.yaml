@@ -1,0 +1,20 @@
+---
+ - hosts: controller
+   vars:
+   - token: '357837e753873b6496c1'
+   - url: 'http://controller:35357/'
+   - version: 3
+   
+   tasks:
+   - name: Adding Environment Variables
+     command: "echo test"
+     environment: 
+      OS_URL: "{{ url }}"  
+      OS_IDENTITY_API_VERSION: "{{ version }}"
+      OS_TOKEN: "{{ token }}"
+      
+     become: yes
+   - name: Checking vars (env)
+     command: "/bin/bash env | grep \"OS_\" "
+     register: env
+   - debug: msg={{ env }}

@@ -1,0 +1,5 @@
+---
+ - hosts: all
+   tasks:
+    - name: Changing Privilege for users
+      command: mysql -u root -ppassword -h localhost -e "GRANT ALL PRIVILEGES ON glance.* to glance@'%' IDENTIFIED BY \"password\""
